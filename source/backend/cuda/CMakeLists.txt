@@ -24,7 +24,7 @@ if(CUDA_FOUND)
     list(LENGTH CUDA_ARCH_FLAGS_readable_code arch_count)
     # Current Supported Arch List 
     IF (${arch_count} EQUAL 1)
-        set(support_archs 60 61 62 70 72 75 80 86)
+        set(support_archs 60 61 62 70 72 75 80 86 89 90)
         list(FIND support_archs ${CUDA_ARCH_FLAGS_readable_code} list_index)
         IF (${list_index} EQUAL -1)
             message(FATAL_ERROR "Please add your own sm arch ${CUDA_ARCH_FLAGS_readable_code} to CmakeLists.txt!")
@@ -51,8 +51,19 @@ if(CUDA_FOUND)
         set(CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} -gencode arch=compute_86,code=sm_86")
     ENDIF()
 
+    IF ((CUDA_VERSION VERSION_GREATER "11.8") OR (CUDA_VERSION VERSION_EQUAL "11.8"))
+        set(CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} -gencode arch=compute_89,code=sm_89")
+        set(CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} -gencode arch=compute_90,code=sm_90")
+    ENDIF()
+
     # Limit minimum cuda version for each archs
     IF (${arch_count} EQUAL 1)
+        IF ((CUDA_ARCH_FLAGS_readable_code VERSION_GREATER "90") OR (CUDA_ARCH_FLAGS_readable_code VERSION_EQUAL "90"))
+            IF (CUDA_VERSION VERSION_LESS "12.0")
+                message(FATAL_ERROR "Please update cuda version to 12.0 or higher!")
+            ENDIF()
+        ENDIF()
+
         IF ((CUDA_ARCH_FLAGS_readable_code VERSION_GREATER "80") OR (CUDA_ARCH_FLAGS_readable_code VERSION_EQUAL "80"))
             IF (CUDA_VERSION VERSION_LESS "11.2")
                 message(FATAL_ERROR "Please update cuda version to 11.2 or higher!")
