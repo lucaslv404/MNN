@@ -195,6 +195,8 @@ static inline std::string forwardType(MNNForwardType type) {
     switch (type) {
         case MNN_FORWARD_CPU:
             return "CPU";
+        case MNN_FORWARD_CUDA:
+            return "CUDA";
         case MNN_FORWARD_VULKAN:
             return "Vulkan";
         case MNN_FORWARD_OPENCL:
